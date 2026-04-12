@@ -24,7 +24,7 @@ public sealed class MainForm : Form
         var blazorWebView = new BlazorWebView
         {
             Dock = DockStyle.Fill,
-            HostPage = Path.Combine(AppContext.BaseDirectory, "wwwroot", "index.html"),
+            HostPage = "wwwroot\\index.html",
             Services = services.BuildServiceProvider()
         };
 

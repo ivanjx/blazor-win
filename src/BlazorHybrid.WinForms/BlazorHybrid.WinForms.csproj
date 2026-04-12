@@ -1,26 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <StaticWebAssetsSdkDirectoryRoot Condition="'$(StaticWebAssetsSdkDirectoryRoot)' == '' and '$(NetCoreRoot)' != '' and '$(NETCoreSdkVersion)' != ''">$(NetCoreRoot)sdk\$(NETCoreSdkVersion)\Sdks\Microsoft.NET.Sdk.StaticWebAssets\</StaticWebAssetsSdkDirectoryRoot>
-    <StaticWebAssetsSdkDirectoryRoot Condition="'$(StaticWebAssetsSdkDirectoryRoot)' == ''">$(MSBuildSDKsPath)\Microsoft.NET.Sdk.StaticWebAssets\</StaticWebAssetsSdkDirectoryRoot>
-    <StaticWebAssetsSdkBuildTasksDirectoryRoot Condition="'$(StaticWebAssetsSdkBuildTasksDirectoryRoot)' == ''">$(StaticWebAssetsSdkDirectoryRoot)tasks\</StaticWebAssetsSdkBuildTasksDirectoryRoot>
-    <StaticWebAssetsSdkBuildTasksRuntime Condition="'$(MSBuildRuntimeType)' == 'Core'">net10.0</StaticWebAssetsSdkBuildTasksRuntime>
-    <StaticWebAssetsSdkBuildTasksRuntime Condition="'$(StaticWebAssetsSdkBuildTasksRuntime)' == ''">net472</StaticWebAssetsSdkBuildTasksRuntime>
-    <StaticWebAssetsSdkBuildTasksAssembly>$(StaticWebAssetsSdkBuildTasksDirectoryRoot)$(StaticWebAssetsSdkBuildTasksRuntime)\Microsoft.NET.Sdk.StaticWebAssets.Tasks.dll</StaticWebAssetsSdkBuildTasksAssembly>
-  </PropertyGroup>
-
-  <UsingTask TaskName="Microsoft.AspNetCore.StaticWebAssets.Tasks.ComputeStaticWebAssetsTargetPaths"
-             AssemblyFile="$(StaticWebAssetsSdkBuildTasksAssembly)"
-             Condition="Exists('$(StaticWebAssetsSdkBuildTasksAssembly)')" />
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorHybrid.Shared\BlazorHybrid.Shared.csproj" />
@@ -29,11 +15,5 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="10.0.10" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <Target Name="StaticWebAssetsPrepareForRun" />
 
 </Project>
