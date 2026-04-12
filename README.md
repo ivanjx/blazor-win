@@ -23,4 +23,4 @@ The GitHub Actions workflow at `.github\workflows\ci-installer.yml` builds the M
 
 ## Signing note
 
-This sample does not store private signing material in the repository. The CI workflow generates a temporary signing certificate during the build, exports it as a passwordless PFX, and uploads it with the installer artifacts.
+This sample does not store private signing material in the repository. The CI workflow generates a temporary signing certificate during the build, exports it as a passwordless PFX with `certutil -user -exportpfx -p ""`, and uploads it with the installer artifacts.

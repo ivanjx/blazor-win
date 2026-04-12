@@ -45,12 +45,11 @@ jobs:
         shell: pwsh
         run: |
           $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=BlazorHybrid CI" -KeyUsage DigitalSignature -FriendlyName "BlazorHybrid CI" -CertStoreLocation Cert:\CurrentUser\My -NotAfter (Get-Date).AddYears(5)
-          $emptyPassword = ConvertTo-SecureString "" -AsPlainText -Force
           $artifactRoot = Join-Path $env:GITHUB_WORKSPACE $env:AppPackagesDirectory
           New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
           $pfxPath = Join-Path $artifactRoot "BlazorHybrid.CI.pfx"
           $cerPath = Join-Path $artifactRoot "BlazorHybrid.CI.cer"
-          Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $emptyPassword | Out-Null
+          & certutil -user -exportpfx -p "" My $cert.Thumbprint $pfxPath | Out-Null
           Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
           "SIGNING_CERT=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
 
