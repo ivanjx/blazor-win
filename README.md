@@ -20,7 +20,3 @@ The TypeScript bundle is produced through the shared library build and copied in
 ## Sideload installer
 
 The GitHub Actions workflow at `.github\workflows\ci-installer.yml` runs once on `windows-latest`, restores the desktop projects, and builds a single sideload bundle that contains both x64 and arm64 packages. It relies on the Visual Studio/MSBuild and Windows SDK tooling preinstalled on the hosted runner and uploads the package artifacts together with the generated signing certificate.
-
-## Signing note
-
-This sample does not store private signing material in the repository. The CI workflow generates a temporary code-signing certificate whose subject matches the package publisher, exports it as a passwordless PFX with `certutil -user -exportpfx -p ""`, and uploads it with the installer artifacts.

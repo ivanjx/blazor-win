@@ -52,8 +52,10 @@ jobs:
           $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=BlazorHybrid" -KeyUsage DigitalSignature -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -KeyExportPolicy Exportable -FriendlyName "BlazorHybrid CI" -CertStoreLocation Cert:\CurrentUser\My -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}") -NotAfter (Get-Date).AddYears(5)
           $artifactRoot = Join-Path $env:GITHUB_WORKSPACE $env:AppPackagesDirectory
           New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
-          $pfxPath = Join-Path $artifactRoot "BlazorHybrid.CI.pfx"
-          $cerPath = Join-Path $artifactRoot "BlazorHybrid.CI.cer"
+          $certRoot = Join-Path $env:RUNNER_TEMP "BlazorHybrid.CI"
+          New-Item -ItemType Directory -Force -Path $certRoot | Out-Null
+          $pfxPath = Join-Path $certRoot "BlazorHybrid.CI.pfx"
+          $cerPath = Join-Path $certRoot "BlazorHybrid.CI.cer"
           & certutil -user -exportpfx -p "" My $cert.Thumbprint $pfxPath | Out-Null
           Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
           "SIGNING_CERT=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
@@ -63,6 +65,8 @@ jobs:
           msbuild $env:PackagingProjectPath /t:Publish
           /p:Configuration=Release
           /p:Platform=$env:BuildPlatform
+          /p:SelfContained=true
+          /p:RuntimeIdentifier=win-$env:BuildPlatform
           /p:UapAppxPackageBuildMode=SideloadOnly
           /p:GenerateAppxPackageOnBuild=true
           /p:AppxBundle=Always
@@ -77,4 +81,4 @@ jobs:
         with:
           name: blazorhybrid-sideload-installer
           path: |
-            AppPackages\
+            AppPackages\*
