@@ -1,9 +1,13 @@
 <Solution>
   <Configurations>
-    <ProjectType TypeId="c7167f0d-bc9f-4e6e-afe1-012c56b48db5" Name="Windows Application Packaging Project" Extension="wapproj" IsBuildable="false" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
   </Configurations>
   <Folder Name="/src/">
-    <Project Path="src/BlazorHybrid.Packaging/BlazorHybrid.Packaging.wapproj" />
+    <Project Path="src/BlazorHybrid.Packaging/BlazorHybrid.Packaging.wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5" Id="d3b6cc15-4e30-4e0e-8f48-553f91e1185a">
+      <Platform Project="x64" />
+      <Deploy />
+    </Project>
     <Project Path="src/BlazorHybrid.Shared/BlazorHybrid.Shared.csproj" />
     <Project Path="src/BlazorHybrid.WinForms/BlazorHybrid.WinForms.csproj" />
   </Folder>

@@ -12,11 +12,16 @@ on:
 jobs:
   build-installer:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x64, arm64]
 
     env:
-      SolutionPath: BlazorHybrid.slnx
+      WinFormsProjectPath: src\BlazorHybrid.WinForms\BlazorHybrid.WinForms.csproj
       PackagingProjectPath: src\BlazorHybrid.Packaging\BlazorHybrid.Packaging.wapproj
-      AppPackagesDirectory: AppPackages
+      AppPackagesDirectory: AppPackages\${{ matrix.platform }}
+      RuntimeIdentifier: win-${{ matrix.platform }}
+      BuildPlatform: ${{ matrix.platform }}
 
     steps:
       - name: Checkout
@@ -53,21 +58,19 @@ jobs:
           Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
           "SIGNING_CERT=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Restore solution
-        run: dotnet restore $env:SolutionPath -p:RuntimeIdentifier=win-x64
-
-      - name: Build solution
-        run: dotnet build $env:SolutionPath -c Release --no-restore -p:RuntimeIdentifier=win-x64
+      - name: Build WinForms host
+        run: dotnet build $env:WinFormsProjectPath -c Release -r $env:RuntimeIdentifier
 
       - name: Build sideload package
         run: >
           msbuild $env:PackagingProjectPath /t:Build
           /p:Configuration=Release
-          /p:Platform=x64
-          /p:RuntimeIdentifier=win-x64
+          /p:Platform=$env:BuildPlatform
+          /p:RuntimeIdentifier=$env:RuntimeIdentifier
           /p:UapAppxPackageBuildMode=SideloadOnly
-          /p:AppxBundle=Never
-          /p:AppxPackageDir="$env:GITHUB_WORKSPACE\AppPackages\"
+          /p:AppxBundle=Always
+          /p:AppxBundlePlatforms=$env:BuildPlatform
+          /p:AppxPackageDir="$env:GITHUB_WORKSPACE\AppPackages\$env:BuildPlatform\"
           /p:AppxPackageSigningEnabled=true
           /p:PackageCertificateKeyFile="$env:SIGNING_CERT"
           /p:PackageCertificatePassword=""
@@ -75,6 +78,6 @@ jobs:
       - name: Upload installer artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: blazorhybrid-sideload-installer
+          name: blazorhybrid-sideload-installer-${{ matrix.platform }}
           path: |
-            AppPackages\
+            AppPackages\${{ matrix.platform }}\

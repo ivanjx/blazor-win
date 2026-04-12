@@ -19,7 +19,7 @@ The TypeScript bundle is produced through the shared library build and copied in
 
 ## Sideload installer
 
-The GitHub Actions workflow at `.github\workflows\ci-installer.yml` builds the MSIX installer on Windows and uploads the package artifacts for sideloading, including the generated signing certificate.
+The GitHub Actions workflow at `.github\workflows\ci-installer.yml` builds x64 and arm64 MSIX bundles on Windows and uploads the package artifacts for sideloading, including the generated signing certificate.
 
 ## Signing note
 
