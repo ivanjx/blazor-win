@@ -12,15 +12,15 @@ Sample Windows Blazor Hybrid solution built with .NET 10.
 ## Build
 
 ```powershell
-dotnet build BlazorHybrid.sln -c Debug
+dotnet build BlazorHybrid.slnx -c Debug
 ```
 
 The TypeScript bundle is produced through the shared library build and copied into its static web assets.
 
 ## Sideload installer
 
-The GitHub Actions workflow at `.github\workflows\ci-installer.yml` builds the MSIX installer on Windows and uploads the package artifacts for sideloading.
+The GitHub Actions workflow at `.github\workflows\ci-installer.yml` builds the MSIX installer on Windows and uploads the package artifacts for sideloading, including the generated signing certificate.
 
 ## Signing note
 
-This sample does not store private signing material in the repository. The CI workflow generates a temporary signing certificate during the build so the installer can be produced without checking a PFX into source control.
+This sample does not store private signing material in the repository. The CI workflow generates a temporary signing certificate during the build, exports it as a passwordless PFX, and uploads it with the installer artifacts.

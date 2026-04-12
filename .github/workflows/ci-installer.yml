@@ -14,7 +14,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      SolutionPath: BlazorHybrid.sln
+      SolutionPath: BlazorHybrid.slnx
       PackagingProjectPath: src\BlazorHybrid.Packaging\BlazorHybrid.Packaging.wapproj
       AppPackagesDirectory: AppPackages
 
@@ -45,17 +45,20 @@ jobs:
         shell: pwsh
         run: |
           $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=BlazorHybrid CI" -KeyUsage DigitalSignature -FriendlyName "BlazorHybrid CI" -CertStoreLocation Cert:\CurrentUser\My -NotAfter (Get-Date).AddYears(5)
-          $password = ConvertTo-SecureString "BlazorHybrid.CI!" -AsPlainText -Force
-          $pfxPath = Join-Path $env:RUNNER_TEMP "BlazorHybrid.CI.pfx"
-          $cerPath = Join-Path $env:RUNNER_TEMP "BlazorHybrid.CI.cer"
-          Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $password | Out-Null
+          $emptyPassword = ConvertTo-SecureString "" -AsPlainText -Force
+          $artifactRoot = Join-Path $env:GITHUB_WORKSPACE $env:AppPackagesDirectory
+          New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
+          $pfxPath = Join-Path $artifactRoot "BlazorHybrid.CI.pfx"
+          $cerPath = Join-Path $artifactRoot "BlazorHybrid.CI.cer"
+          Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $emptyPassword | Out-Null
           Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
           "SIGNING_CERT=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "SIGNING_CERT_PASSWORD=BlazorHybrid.CI!" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "PUBLIC_CERT=$cerPath" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Restore solution
-        run: msbuild $env:SolutionPath /t:Restore /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64
+        run: dotnet restore $env:SolutionPath -p:RuntimeIdentifier=win-x64
+
+      - name: Build solution
+        run: dotnet build $env:SolutionPath -c Release --no-restore -p:RuntimeIdentifier=win-x64
 
       - name: Build sideload package
         run: >
@@ -68,7 +71,7 @@ jobs:
           /p:AppxPackageDir="$env:GITHUB_WORKSPACE\AppPackages\"
           /p:AppxPackageSigningEnabled=true
           /p:PackageCertificateKeyFile="$env:SIGNING_CERT"
-          /p:PackageCertificatePassword="$env:SIGNING_CERT_PASSWORD"
+          /p:PackageCertificatePassword=""
 
       - name: Upload installer artifacts
         uses: actions/upload-artifact@v4
@@ -76,4 +79,3 @@ jobs:
           name: blazorhybrid-sideload-installer
           path: |
             AppPackages\
-            ${{ env.PUBLIC_CERT }}
