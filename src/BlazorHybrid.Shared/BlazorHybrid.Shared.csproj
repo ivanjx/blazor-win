@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.5" />
+  </ItemGroup>
+
+  <Target Name="BuildClientScripts"
+          BeforeTargets="Build"
+          Inputs="..\BlazorHybrid.ClientScripts\package.json;..\BlazorHybrid.ClientScripts\package-lock.json;..\BlazorHybrid.ClientScripts\src\index.ts"
+          Outputs="wwwroot\js\blazorInterop.js"
+          Condition="'$(DesignTimeBuild)' != 'true' and Exists('..\BlazorHybrid.ClientScripts\package.json')">
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\BlazorHybrid.ClientScripts" Command="npm run build" />
+  </Target>
+
+</Project>

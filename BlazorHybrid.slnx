@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <ProjectType TypeId="c7167f0d-bc9f-4e6e-afe1-012c56b48db5" Name="Windows Application Packaging Project" Extension="wapproj" IsBuildable="false" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/BlazorHybrid.Packaging/BlazorHybrid.Packaging.wapproj">
+      <Platform Project="x64" />
+      <Build />
+      <Deploy />
+    </Project>
+    <Project Path="src/BlazorHybrid.Shared/BlazorHybrid.Shared.csproj" />
+    <Project Path="src/BlazorHybrid.WinForms/BlazorHybrid.WinForms.csproj" />
+  </Folder>
+</Solution>

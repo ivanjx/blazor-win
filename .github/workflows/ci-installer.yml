@@ -1,0 +1,79 @@
+name: Build sideload installer
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    env:
+      SolutionPath: BlazorHybrid.sln
+      PackagingProjectPath: src\BlazorHybrid.Packaging\BlazorHybrid.Packaging.wapproj
+      AppPackagesDirectory: AppPackages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/BlazorHybrid.ClientScripts/package-lock.json
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install npm dependencies
+        working-directory: src/BlazorHybrid.ClientScripts
+        run: npm ci
+
+      - name: Create signing certificate
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=BlazorHybrid CI" -KeyUsage DigitalSignature -FriendlyName "BlazorHybrid CI" -CertStoreLocation Cert:\CurrentUser\My -NotAfter (Get-Date).AddYears(5)
+          $password = ConvertTo-SecureString "BlazorHybrid.CI!" -AsPlainText -Force
+          $pfxPath = Join-Path $env:RUNNER_TEMP "BlazorHybrid.CI.pfx"
+          $cerPath = Join-Path $env:RUNNER_TEMP "BlazorHybrid.CI.cer"
+          Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $password | Out-Null
+          Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
+          "SIGNING_CERT=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "SIGNING_CERT_PASSWORD=BlazorHybrid.CI!" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PUBLIC_CERT=$cerPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Restore solution
+        run: msbuild $env:SolutionPath /t:Restore /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64
+
+      - name: Build sideload package
+        run: >
+          msbuild $env:PackagingProjectPath /t:Build
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:UapAppxPackageBuildMode=SideloadOnly
+          /p:AppxBundle=Never
+          /p:AppxPackageDir="$env:GITHUB_WORKSPACE\AppPackages\"
+          /p:AppxPackageSigningEnabled=true
+          /p:PackageCertificateKeyFile="$env:SIGNING_CERT"
+          /p:PackageCertificatePassword="$env:SIGNING_CERT_PASSWORD"
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: blazorhybrid-sideload-installer
+          path: |
+            AppPackages\
+            ${{ env.PUBLIC_CERT }}

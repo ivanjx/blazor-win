@@ -1,0 +1,17 @@
+{
+  "name": "blazorhybrid-clientscripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --format=esm --platform=browser --target=es2022 --outfile=../BlazorHybrid.Shared/wwwroot/js/blazorInterop.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.16",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

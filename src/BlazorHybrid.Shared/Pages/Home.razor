@@ -1,0 +1,27 @@
+@page "/"
+@inject BrowserInteropService BrowserInterop
+
+<PageTitle>Blazor Hybrid</PageTitle>
+
+<h1>Blazor Hybrid</h1>
+
+<p>@_status</p>
+
+<button @onclick="InvokeJavaScriptAsync">Call TypeScript</button>
+
+@if (_sum is not null)
+{
+    <p>2 + 3 = @_sum</p>
+}
+
+@code {
+    private string _status = "Press the button to call the bundled TypeScript module.";
+    private int? _sum;
+
+    private async Task InvokeJavaScriptAsync()
+    {
+        var greeting = await BrowserInterop.SayHelloAsync("WinForms host");
+        _sum = await BrowserInterop.AddAsync(2, 3);
+        _status = $"{greeting} lodash returned {_sum}.";
+    }
+}
