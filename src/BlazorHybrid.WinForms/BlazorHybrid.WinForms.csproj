@@ -10,7 +10,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <StaticWebAssetsSdkBuildTasksAssembly>C:\Program Files\dotnet\sdk\10.0.201\Sdks\Microsoft.NET.Sdk.StaticWebAssets\tasks\net10.0\Microsoft.NET.Sdk.StaticWebAssets.Tasks.dll</StaticWebAssetsSdkBuildTasksAssembly>
+    <StaticWebAssetsSdkDirectoryRoot Condition="'$(StaticWebAssetsSdkDirectoryRoot)' == '' and '$(NetCoreRoot)' != '' and '$(NETCoreSdkVersion)' != ''">$(NetCoreRoot)sdk\$(NETCoreSdkVersion)\Sdks\Microsoft.NET.Sdk.StaticWebAssets\</StaticWebAssetsSdkDirectoryRoot>
+    <StaticWebAssetsSdkDirectoryRoot Condition="'$(StaticWebAssetsSdkDirectoryRoot)' == ''">$(MSBuildSDKsPath)\Microsoft.NET.Sdk.StaticWebAssets\</StaticWebAssetsSdkDirectoryRoot>
+    <StaticWebAssetsSdkBuildTasksDirectoryRoot Condition="'$(StaticWebAssetsSdkBuildTasksDirectoryRoot)' == ''">$(StaticWebAssetsSdkDirectoryRoot)tasks\</StaticWebAssetsSdkBuildTasksDirectoryRoot>
+    <StaticWebAssetsSdkBuildTasksRuntime Condition="'$(MSBuildRuntimeType)' == 'Core'">net10.0</StaticWebAssetsSdkBuildTasksRuntime>
+    <StaticWebAssetsSdkBuildTasksRuntime Condition="'$(StaticWebAssetsSdkBuildTasksRuntime)' == ''">net472</StaticWebAssetsSdkBuildTasksRuntime>
+    <StaticWebAssetsSdkBuildTasksAssembly>$(StaticWebAssetsSdkBuildTasksDirectoryRoot)$(StaticWebAssetsSdkBuildTasksRuntime)\Microsoft.NET.Sdk.StaticWebAssets.Tasks.dll</StaticWebAssetsSdkBuildTasksAssembly>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.AspNetCore.StaticWebAssets.Tasks.ComputeStaticWebAssetsTargetPaths"
