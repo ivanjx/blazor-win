@@ -66,6 +66,7 @@ jobs:
           /p:Configuration=Release
           /p:Platform=$env:BuildPlatform
           /p:SelfContained=true
+          /p:WindowsPackageType=MSIX
           /p:RuntimeIdentifier=win-$env:BuildPlatform
           /p:UapAppxPackageBuildMode=SideloadOnly
           /p:GenerateAppxPackageOnBuild=true
