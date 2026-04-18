@@ -46,7 +46,7 @@ jobs:
       - name: Restore .NET projects
         run: |
           dotnet restore $env:WinFormsProjectPath -p:RuntimeIdentifier=win-x64 -p:SelfContained=true
-          dotnet restore $env:PackagingProjectPath -p:RuntimeIdentifier=win-arm64 -p:SelfContained=true
+          dotnet restore $env:WinFormsProjectPath -p:RuntimeIdentifier=win-arm64 -p:SelfContained=true
 
       - name: Create signing certificate
         shell: pwsh
