@@ -12,14 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.6" />
   </ItemGroup>
 
-  <Target Name="BuildClientScripts"
-          BeforeTargets="Build"
-          Inputs="..\BlazorHybrid.ClientScripts\package.json;..\BlazorHybrid.ClientScripts\package-lock.json;..\BlazorHybrid.ClientScripts\src\index.ts"
-          Outputs="wwwroot\js\blazorInterop.js"
-          Condition="'$(DesignTimeBuild)' != 'true' and Exists('..\BlazorHybrid.ClientScripts\package.json')">
+  <Target Name="BuildClientScripts" BeforeTargets="Build" Inputs="..\BlazorHybrid.ClientScripts\package.json;..\BlazorHybrid.ClientScripts\package-lock.json;..\BlazorHybrid.ClientScripts\src\index.ts" Outputs="wwwroot\js\blazorInterop.js" Condition="'$(DesignTimeBuild)' != 'true' and Exists('..\BlazorHybrid.ClientScripts\package.json')">
     <Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\BlazorHybrid.ClientScripts" Command="npm run build" />
   </Target>
 

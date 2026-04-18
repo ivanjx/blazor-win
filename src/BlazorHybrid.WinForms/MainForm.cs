@@ -2,6 +2,8 @@ using BlazorHybrid.Shared;
 using BlazorHybrid.Shared.Services;
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Windows.AppNotifications;
+using Microsoft.Windows.AppNotifications.Builder;
 
 namespace BlazorHybrid.WinForms;
 
@@ -31,5 +33,17 @@ public sealed class MainForm : Form
         blazorWebView.RootComponents.Add<App>("#app");
 
         Controls.Add(blazorWebView);
+    }
+
+    protected override async void OnLoad(EventArgs e)
+    {
+        await Task.Delay(1000);
+        var notification = new AppNotificationBuilder()
+            .AddArgument("action", "viewConversation")
+            .AddArgument("conversationId", "9813")
+            .AddText("Andrew sent you a picture")
+            .AddText("Check this out, The Enchantments in Washington!")
+            .BuildNotification();
+        AppNotificationManager.Default.Show(notification);
     }
 }
